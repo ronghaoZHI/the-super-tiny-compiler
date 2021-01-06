@@ -599,6 +599,8 @@ function parser(tokens) {
 
   // Now, we're going to create our AST which will have a root which is a
   // `Program` node.
+  
+  // 创建 ast 根节点 program
   let ast = {
     type: 'Program',
     body: [],

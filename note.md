@@ -24,6 +24,62 @@ const tokens = [
   { type: 'paren',  value: ')'        }
 ];
 
+function tokenizer(input) {
+  let tokens = []
+  let current = 0;
+
+  while(current < input.length) {
+    let char = input[current]
+    // '('  ')' 括号
+    if(char === '(' || char === ')') {
+      tokens.push({
+        type: 'para',
+        value: char
+      })
+      current++;
+      continue;
+    }
+    //  空格
+    let WHITESPACE = /\s/;
+    if(WHITESPACE.test(char)) {
+      current++;
+      continue;
+    }
+    // 0-9 数字
+    let NUMBERS = /[0-9]/;
+    if(NUMBERS.test(char)) {
+      //...
+      let value = '';
+      while(NUMBERS.test(char)) {
+        value += char;
+        char = input[++current]
+      }
+      tokens.push({
+        type: 'number',
+        value
+      })
+      continue;
+    }
+    // string "xx"  字符串
+    if(char === '"') {
+      // ...
+    }
+    // name
+    let LETTERS = /[a-z]/i;
+    if(LETTERS) {
+      // ...
+    }
+
+    throw new TypeErroe(char)
+  }
+  return tokens
+}
+
+function parser(tokens) {
+
+
+}
+
 ```
 
 ### parser
@@ -97,13 +153,51 @@ const ast = {
 ```
 对于上述 AST 我们需要做一些处理：
 
-1. Program -- AST顶级起始处理位置
-2. CallExpression (add) --  
-3. NumberLiteral (2) 
-4. CallExpression (subtract)
-5. NumberLiteral (4)
-6. NumberLiteral (2)
+1. Program -- AST顶端节点（起始位置）
+2. CallExpression (add) -- 移动到 Program body 的 第一个元素
+3. NumberLiteral (2)  -- 移动到 CallExpression params 的第一个元素
+4. CallExpression (subtract)  --  移动到 CallExpression params 的第二个元素
+5. NumberLiteral (4) --  移动到 CallExpression params 的第一个元素
+6. NumberLiteral (2) -- 移动到 CallExpression params 的第二个元素
 
+
+
+var visitor = {
+  NumberLiteral(node, parent) {},
+  CallExpression(node, parent) {},
+};
+
+
+
+- Program
+  - CallExpression
+    - NumberLiteral
+    - CallExpression
+      - NumberLiteral
+      - NumberLiteral
+
+
+
+-> Program (enter)
+  -> CallExpression (enter)
+    -> Number Literal (enter)
+    <- Number Literal (exit)
+    -> Call Expression (enter)
+       -> Number Literal (enter)
+       <- Number Literal (exit)
+       -> Number Literal (enter)
+       <- Number Literal (exit)
+    <- CallExpression (exit)
+  <- CallExpression (exit)
+<- Program (exit)
+
+
+var visitor = {
+  NumberLiteral: {
+    enter(node, parent) {},
+    exit(node, parent) {},
+  }
+};
 
 ```javascript
 const newAst = {
